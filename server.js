@@ -25,6 +25,7 @@ app.get('/api', function(req, res){
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
     var language = req.headers["accept-language"];
+    language = language.substring(0, language.indexOf(","));
     var software = req.headers['user-agent'];
     software = software.substring(software.indexOf("(")+1, software.indexOf(")"));
 
