@@ -1,26 +1,25 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 
 const app = express();
 
-const port = process.env.PORT || 3000;
+app.use(cors({ optionsSuccessStatus: 200 }));
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+app.use(express.static('public'));
 
-app.get('/api', (req, res) => {
-    const ip = req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
-    const language = req.headers["accept-language"].split(",")[0];
-    let software = req.headers['user-agent'];
-    software = software.substring(software.indexOf("(")+1, software.indexOf(")"));
-
-    res.json({
-        "ip-address": ip,
-        "language": language,
-        "software": software
-    });
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-app.listen(port, () => console.log(`App now listening on port ${port}...`));
+app.get('/api/whoami', (req, res) => {
+  res.json({
+    ipaddress: req.ip || req.ips,
+    language: req.headers['accept-language'],
+    software: req.headers['user-agent']
+  });
+});
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`App now listening on port ${PORT}...`));
